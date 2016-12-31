@@ -1,0 +1,17 @@
+---
+## my first playbook
+
+- hosts: all
+  tasks:
+  - name: apply all available updates
+    yum: name='*' state=latest 
+  - name: ping all hosts
+    action: ping
+  - name: is reboot required
+    command: needs-restarting -r
+    register: err_code
+    ignore_errors: true
+    changed_when: "err_code.rc > 0"
+    failed_when: "err_code.rc < 0"
+    no_log: true
+...
