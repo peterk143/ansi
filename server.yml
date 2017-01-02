@@ -2,11 +2,16 @@
 ## my first playbook
 
 - hosts: all
+#  serial: 1
+#  any_errors_fatal: true
+
   tasks:
   - name: apply all available updates
     yum: name='*' state=latest 
+
   - name: ping all hosts
     action: ping
+
   - name: is reboot required
     command: needs-restarting -r
     register: err_code
@@ -14,4 +19,13 @@
     changed_when: "err_code.rc > 0"
     failed_when: "err_code.rc < 0"
     no_log: true
+
+  - name: restart machines
+    command: echo "shutdown -r now"
+    when: "err_code.rc > 0"
+    async: 45
+    poll: 2
+
+  - name: wait for restarted hosts to come back
+    local_action: wait_for host={{ inventory_hostname }} port=22 delay=20 
 ...
