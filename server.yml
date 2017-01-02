@@ -1,5 +1,5 @@
 ---
-## my first playbook
+## Playbook for updating and rebooting hosts
 
 - hosts: all
 #  serial: 1
@@ -8,9 +8,6 @@
   tasks:
   - name: apply all available updates
     yum: name='*' state=latest 
-
-  - name: ping all hosts
-    action: ping
 
   - name: is reboot required
     command: needs-restarting -r
@@ -26,6 +23,6 @@
     async: 45
     poll: 2
 
-  - name: wait for restarted hosts to come back
+  - name: wait for host(s) to come back
     local_action: wait_for host={{ inventory_hostname }} port=22 delay=20 
 ...
